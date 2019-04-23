@@ -1,0 +1,97 @@
+<!-- 头部 start -->
+<script>
+    //判断是否登录，然后影藏
+    $(function () {
+        $.get("login/getLoginTelno", {}, function (result) {
+            var data = result.data;
+            console.log("index page data :"+data);
+            if (data != null) {
+                var customerTelno = "欢迎，" + data.customerTelno;
+                console.log("customerTelno:" + customerTelno);
+                $("#span_username").html(customerTelno);
+                $(".login_out").hide();
+                $(".login").show();
+            } else {
+                console.log("未登录");
+                $(".login_out").show();
+                $(".login").hide();
+            }
+        });
+    });
+
+
+
+    // jQuery.post(url,data,success(data, textStatus, jqXHR),dataType)
+    //退出
+    $(".logout").click(function(){
+        console.log("用户退出=================");
+        $.get("/ssm_demo/login/logout", {}, function (result) {
+            console.log("result:" + result);
+            var logoutStatus =result.status;
+            console.log("logoutStatus:==="+logoutStatus);
+            if(logoutStatus=="SUCCESS") {
+                //退出成功
+                $(".login_out").show();
+                $(".login").hide();
+            }else {
+                alert("退出失败");
+            }
+        });
+    });
+
+
+</script>
+
+<header id="header">
+        <div class="top_banner">
+            <img src="images/top_banner.jpg" alt="">
+        </div>
+        <div class="shortcut">
+            <!-- 未登录状态  -->
+            <div class="login_out">
+                <a href="/ssm_demo/login/gotoLogin" class="loginBtn">登录</a>
+                <a href="/ssm_demo/login/goToRegist">注册</a>
+            </div>
+            <!-- 已登录状态-->
+            <div class="login">
+               <a class="info" href="/ssm_demo/login/goToInfo"><span id="span_username"></span></a>
+                <a href="javascript:;" class="logout">退出</a>
+                <a href="/ssm_demo/note/gotoMyNote" class="myNote">我的游记</a>
+            </div>
+        </div>
+        <div class="header_wrap">
+            <div class="topbar">
+                <div class="logo">
+                    <a href="/"><img src="images/logo.jpg" alt=""></a>
+                </div>
+                <div class="search">
+                    <input name="" type="text" placeholder="请输入游记名称" class="search_input" autocomplete="off">
+                    <a href="javascript:;" class="search-button">搜索</a>
+                </div>
+                <div class="hottel">
+                    <div class="hot_pic addNoteBtn">
+                        <a href="/ssm_demo/note/goToadd">
+                            <img src="images/add_note_btn.jpg" alt="">
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <!-- 头部 end -->
+     <!-- 首页导航 -->
+    <div class="navitem">
+        <ul id="category" class="nav">
+           <!-- <li class="nav-active"><a href="index.html">首页</a></li>
+            <li><a href="route_list.html">门票</a></li>
+            <li><a href="route_list.html">酒店</a></li>
+            <li><a href="route_list.html">香港车票</a></li>
+            <li><a href="route_list.html">出境游</a></li>
+            <li><a href="route_list.html">国内游</a></li>
+            <li><a href="route_list.html">港澳游</a></li>
+            <li><a href="route_list.html">抱团定制</a></li>
+            <li><a href="route_list.html">全球自由行</a></li>
+            <li><a href="favoriterank.html">收藏排行榜</a></li>-->
+        </ul>
+    </div>
+    

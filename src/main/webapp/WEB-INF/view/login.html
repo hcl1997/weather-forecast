@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>登录</title>
+
+<script src="/ssm_demo/js/jquery-3.3.1.js"></script>
+<script>
+    var InterValObj; //timer变量，控制时间
+    var count = 60; //间隔函数，1秒执行
+    var curCount;//当前剩余秒数
+    $("#getCodeBtn").click(function() {
+        console.log("getCodeBtn.... click")
+        curCount = count;
+        $("#getCodeBtn").attr("disabled", "true");//发送验证码
+        $("#getCodeBtn").val(curCount + "秒后可重新发送");
+        InterValObj = window.setInterval(SetRemainTime, 1000); //启动计时器，1秒执行一次请求后台发送验证码 TODO
+    });
+    //timer处理函数
+    function SetRemainTime() {
+        if (curCount == 0) {
+            window.clearInterval(InterValObj);//停止计时器
+            $("#getCodeBtn").removeAttr("disabled");//启用按钮
+            $("#getCodeBtn").val("重新发送验证码");
+        } else {
+            curCount--;
+            $("#getCodeBtn").val(curCount + "秒后可重新发送");
+        }
+    }
+    </script>
+</head>
+
+
+
+
+<body>
+<div id="login_telno">
+    <form method="post">
+        手机号:<input type="text" id="phone" name="phone"><br>
+        验证码:<input type="text" name="code" id="code">
+        <input type="button" value="获取验证码" id="getCodebtn" name="getCodebtn">
+        <br>
+        <input type="button" name="loginBtn" id="loginBtn" value="登录">
+    </form>
+    <input type="button" id="check_to_normal" value="用户名与密码登录">
+</div>
+
+<div id="login_normal">
+    <form method="post">
+        用户名:<input type="text" id="username" name="username"><br>
+        密码:<input type="text" name="userpwd" id="userpwd"><br>
+        <input type="button" name="loginBtn" id="loginByuser" value="登录">
+    </form>
+    <input type="button" id="check_to_telno" value="验证码登录">
+</div>
+<script>
+    <!-- 切换登录方式-->
+    $("#login_telno").show();
+    $("#login_normal").hide();
+    $("#check_to_normal").click(function () {
+        $("#login_telno").hide();
+        $("#login_normal").show();
+    });
+    $("#check_to_telno").click(function () {
+        $("#login_telno").show();
+        $("#login_normal").hide();
+    })
+
+    var sms = "";
+    //发送验证码
+    $("#getCodebtn").click(function() {
+        var phone = $("#phone").val();
+        console.log("手机号码"+phone);
+        if (phone != "") {
+            $.ajax({
+                url : "/ssm_demo/login/getCode",  //发送请求
+                type : "post",
+                data : {
+                    "phone" : phone
+                },
+                dataType:"text",
+                success : function(result) {
+                    console.log("result======="+result);
+                    sms = result;
+                }
+            });
+        } else {
+            alert("请输入手机号");
+            return false;
+        }
+    });
+    //点击登录
+    $("#loginBtn").click(function() {
+        var phone = $("#phone").val();
+        var code = $("#code").val();
+        if (code == "") {
+            alert("请输入验证码");
+        } else {
+            if (sms == code) {
+                console.log("验证码正确");
+                loginByTelno(phone);
+                //window.location.href = "success.html";
+            } else {
+                alert("验证码错误");
+            }
+            ;
+        }
+        ;
+    });
+
+    //登陆的异步请求
+    function loginByTelno(telno){
+        $.ajax({
+            url : "/ssm_demo/login/loginByPhone",  //发送请求
+            type : "post",
+            data : {
+                "telno" : telno
+            },
+            success : function(result) {
+                console.log("result"+result);
+                console.log("status:"+result.status);
+                if(result.status=="SUCCESS"){
+                    console.log("登陆成功");
+                    window.location.href="/ssm_demo/index.html";
+                }else {
+                    alert("登录失败");
+                }
+            }
+        });
+    }
+</script>
+</body>
+</html>
